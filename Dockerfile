@@ -10,7 +10,7 @@ RUN \
 	apt-get -qq install php7.4 php7.4-apcu php7.4-curl php7.4-gd php7.4-gmp php7.4-igbinary php7.4-imagick php7.4-imap php7.4-intl php7.4-mbstring php7.4-mysql php7.4-sqlite3 php7.4-xdebug php7.4-xml php7.4-xsl php7.4-zip && \
 	apt-get -qq install php8.0 php8.0-apcu php8.0-curl php8.0-gd php8.0-gmp php8.0-igbinary php8.0-imagick php8.0-imap php8.0-intl php8.0-mbstring php8.0-mysql php8.0-sqlite3 php8.0-xdebug php8.0-xml php8.0-xsl php8.0-zip && \
 	apt-get -qq install php8.1 php8.1-curl php8.1-gd php8.1-gmp php8.1-imap php8.1-intl php8.1-mbstring php8.1-mysql php8.1-sqlite3 php8.1-xml php8.1-zip && \
-	apt-get -qq install git subversion jq wget unzip netcat-openbsd sudo && \
+	apt-get -qq install git subversion jq wget unzip netcat-openbsd sudo default-mysql-client moreutils openssh-client nodejs npm && \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/* && \
 	echo "xdebug.mode=coverage" >> /etc/php/7.3/mods-available/xdebug.ini && \
