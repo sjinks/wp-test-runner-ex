@@ -1,0 +1,62 @@
+name: Image Security Scan
+
+on:
+  push:
+    paths-ignore:
+      - "README.md"
+      - "LICENSE"
+  workflow_dispatch:
+  schedule:
+    - cron: "25 4 * * *"
+
+jobs:
+  scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    if: ${{ !contains(github.event.head_commit.message, '[ci skip]') || github.event_name != 'push' }}
+    steps:
+      - name: Check out the source code
+        uses: actions/checkout@v2.3.4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1.6.0
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v2.7.0
+        with:
+          context: .
+          load: true
+          pull: true
+          push: false
+          tags: wp-test-runner-ex:${{ github.sha }}
+
+      - name: Determine security scan parameters
+        id: scanparams
+        run: |
+          if \
+            ([ "${{ github.event_name }}" != "pull_request" ] || [ "${{ github.event.pull_request.head.repo.full_name }}" == "${{ github.event.pull_request.base.repo.full_name }}" ]) && \
+            [ "${{ github.event.sender.login }}" != "dependabot[bot]" ]
+          then
+            echo ::set-output name=format::template
+            echo ::set-output name=template::@/contrib/sarif.tpl
+            echo ::set-output name=output::trivy-results.sarif
+          else
+            echo ::set-output name=format::table
+            echo ::set-output name=template::
+            echo ::set-output name=output::
+          fi
+
+      - name: Security Scan
+        uses: aquasecurity/trivy-action@master
+        id: scan
+        with:
+          image-ref: wp-test-runner-ex:${{ github.sha }}
+          format: ${{ steps.scanparams.outputs.format }}
+          template: ${{ steps.scanparams.outputs.template }}
+          output: ${{ steps.scanparams.outputs.output }}
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: trivy-results.sarif
+        if: steps.scanparams.outputs.output != ''
