@@ -3,10 +3,10 @@
 set -x
 set -e
 
-: "${MYSQL_USER:="wordpress"}"
-: "${MYSQL_PASSWORD:="wordpress"}"
-: "${MYSQL_DB:="wordpress_test"}"
-: "${MYSQL_HOST:="db"}"
+: "${MYSQL_USER-"wordpress"}"
+: "${MYSQL_PASSWORD-"wordpress"}"
+: "${MYSQL_DB-"wordpress_test"}"
+: "${MYSQL_HOST-"db"}"
 : "${WORDPRESS_VERSION:="latest"}"
 : "${PHPUNIT_VERSION:=""}"
 : "${PHP_VERSION:=""}"
