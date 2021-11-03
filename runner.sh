@@ -11,6 +11,7 @@ set -e
 : "${PHPUNIT_VERSION:=""}"
 : "${PHP_VERSION:=""}"
 : "${DISABLE_XDEBUG:=""}"
+: "${APP_HOME:="/app"}"
 
 if [ ! -d "/wordpress/wordpress-${WORDPRESS_VERSION}" ] || [ ! -d "/wordpress/wordpress-tests-lib-${WORDPRESS_VERSION}" ]; then
 	install-wp "${WORDPRESS_VERSION}"
@@ -45,9 +46,9 @@ done
 ${PHP} -v
 
 echo "Running tests..."
-if [ -f /app/phpunit.xml ] || [ -f /app/phpunit.xml.dist ]; then
-	if [ -x /app/vendor/bin/phpunit ] && [ -z "${PHPUNIT_VERSION}" ]; then
-		PHPUNIT=/app/vendor/bin/phpunit
+if [ -f "${APP_HOME}/phpunit.xml" ] || [ -f "${APP_HOME}/phpunit.xml.dist" ]; then
+	if [ -x "${APP_HOME}/vendor/bin/phpunit" ] && [ -z "${PHPUNIT_VERSION}" ]; then
+		PHPUNIT="${APP_HOME}/vendor/bin/phpunit"
 	elif [ -n "${PHPUNIT_VERSION}" ] && [ -x "/usr/local/bin/phpunit${PHPUNIT_VERSION}" ]; then
 		PHPUNIT="/usr/local/bin/phpunit${PHPUNIT_VERSION}"
 	else
@@ -57,7 +58,7 @@ if [ -f /app/phpunit.xml ] || [ -f /app/phpunit.xml.dist ]; then
 	${PHP} -f "${PHPUNIT}" -- --version
 	${PHP} -f "${PHPUNIT}" -- "$@"
 else
-	echo "Unable to find phpunit.xml or phpunit.xml.dist"
-	ls -lha /app
+	echo "Unable to find phpunit.xml or phpunit.xml.dist in ${APP_HOME}"
+	ls -lha "${APP_HOME}"
 	exit 1
 fi
