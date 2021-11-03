@@ -1,5 +1,6 @@
-FROM cimg/base:2021.04
+FROM cimg/base:stable-20.04
 
+USER root
 RUN \
 	export DEBIAN_FRONTEND=noninteractive; \
 	apt-get -qq update && apt-get -y upgrade && \
