@@ -26,6 +26,9 @@ RUN \
 	wget -q -O /usr/local/bin/phpunit8 https://phar.phpunit.de/phpunit-8.phar && chmod +x /usr/local/bin/phpunit8 && \
 	wget -q -O /usr/local/bin/phpunit9 https://phar.phpunit.de/phpunit-9.phar && chmod +x /usr/local/bin/phpunit9
 
+COPY install-wp.sh /usr/local/bin/install-wp
+COPY runner.sh /usr/local/bin/runner
+
 USER circleci
 
 RUN \
@@ -35,10 +38,6 @@ RUN \
 	wait
 
 RUN composer global require phpunit/phpunit:^7 yoast/phpunit-polyfills:^1
-
-USER root
-COPY install-wp.sh /usr/local/bin/install-wp
-COPY runner.sh /usr/local/bin/runner
 
 USER circleci
 ENV APP_HOME /home/circleci/project

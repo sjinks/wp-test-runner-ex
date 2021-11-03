@@ -32,6 +32,9 @@ RUN \
 	echo "user ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/user && \
 	chmod 0440 /etc/sudoers.d/user
 
+COPY install-wp.sh /usr/local/bin/install-wp
+COPY runner.sh /usr/local/bin/runner
+
 USER user
 
 RUN \
@@ -41,10 +44,6 @@ RUN \
 	wait
 
 RUN composer global require phpunit/phpunit:^7 yoast/phpunit-polyfills:^1
-
-USER root
-COPY install-wp.sh /usr/local/bin/install-wp
-COPY runner.sh /usr/local/bin/runner
 
 USER user
 WORKDIR /app
