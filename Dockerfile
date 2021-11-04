@@ -33,7 +33,7 @@ RUN \
 	chmod 0440 /etc/sudoers.d/user
 
 COPY install-wp.sh /usr/local/bin/install-wp
-COPY runner.sh /usr/local/bin/runner
+
 
 USER user
 
@@ -45,8 +45,12 @@ RUN \
 
 RUN composer global require phpunit/phpunit:^7 yoast/phpunit-polyfills:^1
 
+RUN install-wp nightly
+
+USER root
+COPY runner.sh /usr/local/bin/runner
+ENTRYPOINT ["/usr/local/bin/runner"]
+
 USER user
 WORKDIR /app
 VOLUME ["/app"]
-
-CMD ["/usr/local/bin/runner"]

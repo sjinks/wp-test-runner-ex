@@ -3,10 +3,10 @@
 set -x
 set -e
 
-: "${MYSQL_USER-"wordpress"}"
-: "${MYSQL_PASSWORD-"wordpress"}"
-: "${MYSQL_DB-"wordpress_test"}"
-: "${MYSQL_HOST-"db"}"
+MYSQL_USER="${MYSQL_USER-"wordpress"}"
+MYSQL_PASSWORD="${MYSQL_PASSWORD-"wordpress"}"
+MYSQL_DB="${MYSQL_DB-"wordpress_test"}"
+MYSQL_HOST="${MYSQL_HOST-"db"}"
 : "${WORDPRESS_VERSION:="latest"}"
 : "${PHPUNIT_VERSION:=""}"
 : "${PHP_VERSION:=""}"
@@ -34,8 +34,10 @@ fi
 
 if [ -n "${DISABLE_XDEBUG}" ]; then
 	PHP="php -d xdebug.mode=Off"
+	PHPUNIT_ARGS="-d xdebug.mode=Off"
 else
 	PHP=php
+	PHPUNIT_ARGS=
 fi
 
 echo "Waiting for MySQL..."
@@ -47,7 +49,6 @@ mysqladmin create "${MYSQL_DB}" --user="${MYSQL_USER}" --password="${MYSQL_PASSW
 
 ${PHP} -v
 
-echo "Running tests..."
 if [ -f "${APP_HOME}/phpunit.xml" ] || [ -f "${APP_HOME}/phpunit.xml.dist" ]; then
 	if [ -x "${APP_HOME}/vendor/bin/phpunit" ] && [ -z "${PHPUNIT_VERSION}" ]; then
 		PHPUNIT="${APP_HOME}/vendor/bin/phpunit"
@@ -58,7 +59,9 @@ if [ -f "${APP_HOME}/phpunit.xml" ] || [ -f "${APP_HOME}/phpunit.xml.dist" ]; th
 	fi
 
 	${PHP} -f "${PHPUNIT}" -- --version
-	${PHP} -f "${PHPUNIT}" -- "$@"
+	echo "Running tests..."
+	# shellcheck disable=SC2086 # PHPUNIT_ARGS should not be quoted
+	${PHP} -f "${PHPUNIT}" -- ${PHPUNIT_ARGS} "$@"
 else
 	echo "Unable to find phpunit.xml or phpunit.xml.dist in ${APP_HOME}"
 	ls -lha "${APP_HOME}"
