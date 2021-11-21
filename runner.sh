@@ -12,6 +12,7 @@ MYSQL_HOST="${MYSQL_HOST-"db"}"
 : "${PHP_VERSION:=""}"
 : "${DISABLE_XDEBUG:=""}"
 : "${APP_HOME:="/app"}"
+: "${PHP_OPTIONS:=""}"
 
 if [ ! -d "/wordpress/wordpress-${WORDPRESS_VERSION}" ] || [ ! -d "/wordpress/wordpress-tests-lib-${WORDPRESS_VERSION}" ]; then
 	install-wp "${WORDPRESS_VERSION}"
@@ -28,16 +29,17 @@ rm -rf /tmp/wordpress /tmp/wordpress-tests-lib
 ln -sf "/wordpress/wordpress-${WORDPRESS_VERSION}" /tmp/wordpress
 ln -sf "/wordpress/wordpress-tests-lib-${WORDPRESS_VERSION}" /tmp/wordpress-tests-lib
 
-if [ -n "${PHP_VERSION}" ] && [ -x "/usr/bin/php${PHP_VERSION}" ]; then
+if [ -x "/usr/bin/php${PHP_VERSION}" ]; then
 	sudo update-alternatives --set php "/usr/bin/php${PHP_VERSION}"
+else
+	echo "Unsupported PHP version: ${PHP_VERSION}"
+	exit 1
 fi
 
 if [ -n "${DISABLE_XDEBUG}" ]; then
-	PHP="php -d xdebug.mode=Off"
-	PHPUNIT_ARGS="-d xdebug.mode=Off"
+	sudo phpdismod -v "${PHP_VERSION}" xdebug || true
 else
-	PHP=php
-	PHPUNIT_ARGS=
+	sudo phpenmod -v "${PHP_VERSION}" xdebug || true
 fi
 
 echo "Waiting for MySQL..."
@@ -47,6 +49,7 @@ done
 
 mysqladmin create "${MYSQL_DB}" --user="${MYSQL_USER}" --password="${MYSQL_PASSWORD}" --host="${MYSQL_HOST}" || true
 
+PHP="php ${PHP_OPTIONS}"
 ${PHP} -v
 
 if [ -f "${APP_HOME}/phpunit.xml" ] || [ -f "${APP_HOME}/phpunit.xml.dist" ]; then
