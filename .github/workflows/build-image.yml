@@ -34,7 +34,7 @@ jobs:
 
       - name: Set up Docker Metadata
         id: meta
-        uses: docker/metadata-action@v3.6.1
+        uses: docker/metadata-action@v3.6.2
         with:
           images: wildwildangel/wp-test-runner-ex
           tags: |
