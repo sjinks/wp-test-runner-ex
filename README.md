@@ -1,5 +1,7 @@
 # wp-test-runner-ex
 
+**The project has moved to https://github.com/Automattic/vip-container-images/tree/master/wp-test-runner**
+
 [![Build Docker image](https://github.com/sjinks/wp-test-runner-ex/actions/workflows/build-image.yml/badge.svg)](https://github.com/sjinks/wp-test-runner-ex/actions/workflows/build-image.yml)
 [![Image Security Scan](https://github.com/sjinks/wp-test-runner-ex/actions/workflows/imagescan.yml/badge.svg)](https://github.com/sjinks/wp-test-runner-ex/actions/workflows/imagescan.yml)
 
